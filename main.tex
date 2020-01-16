@@ -1,0 +1,98 @@
+\documentclass[review]{elsarticle}
+
+\usepackage{multirow}
+\usepackage{lineno}
+\usepackage{xspace}
+\usepackage{threeparttable}
+\usepackage{subfig}
+\modulolinenumbers[5]
+
+%% Journal name here
+\journal{Journal Title}
+
+%% `Elsevier LaTeX' style
+\bibliographystyle{elsarticle-num}
+%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%% packages and definitions (optional)
+\usepackage{placeins}
+\usepackage{booktabs} % nice rules (thick lines) for tables
+\usepackage{microtype} % improves typography for PDF
+\usepackage{hhline}
+\usepackage{amsmath}
+\usepackage{subfig}
+
+\usepackage{booktabs}
+\usepackage{threeparttable, tablefootnote}
+
+\usepackage{tabularx}
+\usepackage{siunitx}
+
+%% Special typesetting for Cyclus
+\newcommand{\Cyclus}{\textsc{Cyclus}\xspace}%
+\newcommand{\Cycamore}{\textsc{Cycamore}\xspace}%
+\graphicspath{{images/}}
+
+% tikz %
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows, decorations, shapes}
+
+\usetikzlibrary{shapes.geometric,arrows}
+\tikzstyle{process} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=blue!30]
+\tikzstyle{object} = [ellipse, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=green!30]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+% hyperref %
+\usepackage[hidelinks]{hyperref}
+% after hyperref %
+\usepackage{cleveref}
+\usepackage{datatool}
+\usepackage[acronym,toc]{glossaries}
+\include{acros}
+
+\makeglossaries
+
+\begin{document}
+\begin{frontmatter}
+\title{Coupled Neutronics/Thermal-Hydraulics Analysis of the Molten Salt
+Fast Reactor}
+
+%\date{}                     % uncomment if you don't need date to appear
+
+% Authors
+\input{authors}
+
+% Institutes of the authors
+\input{institutions}
+
+\begin{keyword}
+molten salt reactor \sep
+molten salt fast reactor \sep
+multiphysics \sep
+safety analysis \sep 
+reactor dynamics \sep
+high performance computing
+\end{keyword}
+
+\input{abstract}
+\end{frontmatter}
+\glsresetall
+
+%% Shows line numbers
+\linenumbers
+
+\input{introduction}
+\input{msfr}
+\input{methods}
+\input{results}
+\input{conclusion}
+\input{acks}
+
+\bibliography{bibliography}
+
+% Prof. Huff discourages appendices in journal articles.
+% But, if you must, include one like so:
+%\pagebreak
+%\input{appendix}
+
+\end{document}
