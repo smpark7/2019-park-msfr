@@ -1,15 +1,115 @@
 \section{Methodology}
 
 This section discusses the modeling approach and the codes used in this paper.
+The reactor model geometry in this paper is kept unchanged from the models
+used by Fiorina et al. and Aufiero et al., henceforth referred to as the
+Polimi/TUDelft models, to provide a fair comparison in this
+benchmarking exercise.
 
-\subsection{Geometry}
+\subsection{Reactor Model Geometry and Group Constant Generation}
 
 For this work, we used the reference square-cylindrical \gls{MSFR} design to
 benchmark Moltres against results published by Fiorina et al. and Aufiero et
 al. It is a 2-D axisymmetric design with the sixteen individual external loops
-homogenized into a single outer loop as shown in figure *. This is the geometry
-used in this work to calculate the multi-group cross sections and various
-group constants for each material region in Serpent 2. 
+homogenized into a single outer loop as shown in Fig. *. For the multi-group
+cross sections and group constants calculations in Serpent, we extended this
+2-D axisymmetric model into a 3-D model by a simple full rotation about the
+central axis. The material definitions are the same as those specified in the
+reference \gls{MSFR} model. Accordingly, the pump and heat exchanger regions
+are assumed to be composed of 100\% fuel salt. While this may not be entirely
+accurate, the exact details of the pump and heat exchanger systems are still
+be researched, and this external loop region is presumed to be of little
+neutronic importance due to its position behind the strong boron carbide
+neutron absorber layer.
+
+There are two key differences between our \gls{MSFR} model geometry in
+Moltres and the Polimi/TUDelft models. The first difference is a relative
+minor change to the mesh by the exclusion of the 4 cm thick structural
+material around the blanket tank that separates the fuel and blanket salts.
+We removed this feature in our finite-element mesh as we had difficulty
+meshing this layer that is relatively much thinner than the rest of the model.
+Any impact on the
+neutron flux is expected to be minimal. Furthermore, we solved for the
+temperature distribution only in the primary loop and applied homogeneous
+Neumann boundary conditions for temperature on the core walls, as was done in
+the Polimi/TUDelft models. Therefore, we believe the overall impact on the
+results is negligible.
+
+The second difference pertains to the modeling of the external loop. In its
+current implementation, Moltres lacks pump- and heat exchanger-equivalents in
+the code. Thus, the external loop is modeled as a 1-D pipe with a point heat
+sink to represent the heat exchanger. Instead of pumps, the flow is driven by
+Dirichlet boundary conditions for velocity on the inlets and outlets of the
+2-D axisymmetric central core geometry and the 1-D external pipe geometry.
+All flow-dependent variables such as temperature, \glspl{DNP}, and decay heat
+precursors are fully conserved as they loop around between the two
+regions. As a result, this approach shares some similarities with the
+geometric multiscale modeling approach by Zanetti et al. Future models could
+create a better representation of the primary loop by implementing a whole
+continuous loop with pressure increases and drops corresponding to the pumps
+and heat exchangers. 
+
+We used the JEFF-3.1.2 cross-section library for group constant generation in
+Serpent. We set a neutron population of 200,000 neutrons per cycle with 50
+inactive and 500 active cycles for a total of 100 million neutron histories.
+The material compositions of the various reactor components follows the
+benchmark specification, with slight adjustments to the
+ratio of $^{232}$Th to $^{233}$U to obtain $k_{\text{eff}}=1$ at 973 K. The
+resulting mole fraction is very close to a result cited in the neutronics
+benchmark paper which was also generated from Serpent using the JEFF-3.1.1
+library (Table \ref{table:mole}). The differences can be largely attributed to
+the statistical uncertainty for both results. We followed the same six-group
+structure as the Polimi COMSOL model \cite{fiorina_modelling_2014}. The
+energy boundaries for the six neutron energy groups are shown in Table
+\ref{table:bound}. For the \glspl{DNP}, the JEFF-3.1.2 library provides
+eight pre-defined \gls{DNP} groups based on their half-lives. The relevant
+group constants for Moltres simulations are: the various macroscopic neutron
+cross-sections, neutron diffusion coefficient, average fission energy, average
+neutron yield, inverse neutron speed, fission spectrum, \gls{DNP} group
+constants, and effective delayed neutron fractions.
+
+\begin{table}[h]
+	\centering
+	\captionsetup{justification=centering}
+    \caption{Comparison of mole fractions and $k_{\text{eff}}$ uncertainty
+    of $^{232}$Th and $^{233}$U in
+    the fuel salt composition adjusted for $k_{eff}=1$ at 973 K.}
+\begin{tabular}{l S S}
+	\hline
+	\textbf{Property} & \textbf{This paper} & \textbf{From benchmark} \\
+	\hline
+    $^{232}$Th & 19.943 \% & 19.948 \% \\
+    $^{233}$U & 2.557 \% & 2.551 \% \\
+    $k_{\text{eff}}$ uncertainty & 4.9 pcm & 4.6 pcm \\
+    \hline
+\end{tabular}
+\label{table:mole}
+\end {table}
+
+\begin{table}[h]
+	\centering
+	\captionsetup{justification=centering}
+	\caption{Neutron energy group upper bounds used in Serpent.}
+	\begin{tabular}{c S}
+		\hline
+		{Group number} & {Upper bound [MeV]}\\
+		\hline
+		1 & 7.485$\times 10^{-4}$\\
+		2 & 5.5308$\times 10^{-3}$\\
+		3 & 2.47875$\times 10^{-2}$\\
+		4 & 0.4979\\
+		5 & 2.2313\\
+		6 & 12\\
+		\hline
+	\end{tabular}
+	\label{table:bound}
+\end{table}
+
+library
+Composition
+energy groups
+neutron pop
+
 
 \subsection{Subsection}
 
