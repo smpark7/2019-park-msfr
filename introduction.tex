@@ -8,9 +8,11 @@ to growing
 research interest in \glspl{MSR} in the past two decades, after a relative
 lull that followed shortly after the shutdown of the first and only fully
 operational \gls{MSR} reactors, the \gls{ARE} and \gls{MSRE}, back in the
-1950s and 1960s. In particular, \glspl{MSR} concepts boast significant
-advantages in reactor safety and sustainability arising from the liquid fuel
-form. The thermal expansion of the fuel contributes significantly to the
+1950s and 1960s \cite{haubenreich_msre_1964}
+\cite{haubenreich_experience_1970}. In particular, \glspl{MSR} concepts boast
+significant advantages in reactor safety and sustainability arising from the
+liquid fuel form \cite{elsheikh_safety_2013}. The thermal expansion of the
+fuel contributes significantly to the
 strongly negative temperature reactivity coefficients observed in most
 \gls{MSR} designs. In the event of a power excursion and the accompanying
 temperature rise, this reactivity feedback is quite prompt and limits the
@@ -40,10 +42,11 @@ In the past two decades, researchers have developed several
 new tools for simulating steady-state and transient behavior in \glspl{MSR}.
 Many of the earlier efforts featured simplifications in simulating
 thermal-hydraulics by solving 1-D Navier-Stokes equations or using
-predetermined uniform velocity fields. In more recent years, there has been
+predetermined uniform velocity fields \cite{krepel_dyn3d-msr_2007}
+\cite{kophazi_development_2009}. In more recent years, there has been
 significant progress towards fully coupled, spatial codes that feature
-2-D axisymmetric or full 3-D models. In 2011, Cammi et al. performed an
-``\gls{MPM}'' analysis
+2-D axisymmetric or full 3-D models. In 2011, Cammi et al.
+\cite{cammi_multi-physics_2011} performed an ``\gls{MPM}'' analysis
 of a simplified 2-D axisymmetric model of a single MSBR fuel channel using
 the commercial finite-element analysis software COMSOL Multiphysics. The
 physics were implemented through the two-group neutron diffusion
@@ -53,7 +56,8 @@ authors emphasized the need for proper full coupling of the multiphysics, and
 presented both steady-state and transient results in various
 scenarios such as reactivity insertions, changes in pumping rate, and the
 presence of periodic perturbations. This approach featured again in a later
-paper by Fiorina et al. in 2014 for a 2-D axisymmetric model of the
+paper by Fiorina et al. \cite{fiorina_modelling_2014} in 2014 for a 2-D
+axisymmetric model of the
 \gls{MSFR}. The authors presented results from the Politecnico di Milano
 COMSOL-based approach, and another approach by researchers from Delft
 University of Technology, where they coupled their in-house neutronics and
@@ -61,7 +65,8 @@ thermal-hydraulics codes, DALTON and HEAT respectively. With multi-group
 neutron diffusion and \gls{RANS} formulations on ultra-fine meshes, both
 models showed good agreement in the steady-state neutron flux, temperature,
 and \gls{DNP} distributions, and in the power responses following various
-accident transient initiations. Aufiero et al. concurrently developed
+accident transient initiations. Aufiero et al. \cite{aufiero_development_2014}
+concurrently developed
 a full-core 3-D model of the \gls{MSFR} on OpenFOAM, albeit with one-group
 neutron diffusion to reduce computational load. With the 3-D model, the
 authors could simulate the asymmetric reactor response to the failure of a
@@ -71,18 +76,21 @@ explicit coupling to obtain accurate solutions of the transient cases.
 Recognizing the huge computational burden required for full 3-D simulations, 
 later authors came up with innovative ways to alleviate this issue such as
 selective geometrical reduced order modeling for various components of a
-reactor based on the importance of the physical phenomena being simulated, or 
-using a novel, efficient method for neutronics calculations.
+reactor based on the importance of the physical phenomena being simulated
+\cite{zanetti_geometric_2015}, or using a novel, efficient method for
+neutronics calculations \cite{laureau_transient_2017}.
 
 In this paper, we present steady-state and transient analysis of the
-\gls{MSFR} concept using Moltres, a multiphysics finite-element analysis tool
+\gls{MSFR} concept using Moltres \cite{lindsay_introduction_2018}, a
+multiphysics finite element analysis tool
 for simulating \glspl{MSR}. Similar to the COMSOL and OpenFOAM, Moltres
 solves the deterministic multi-group neutron diffusion and thermal-hydraulics
 \glspl{PDE} simultaneously on the same mesh. It supports up to 3-D meshes and
 scales well for an arbitrary number of processors. As a code under active
 development, the main objective of this paper is to benchmark Moltres' current
 capabilities against similar codes in the context of the reference
-\gls{MSFR} concept. A previous study showcasing Moltres' capabilities with
+\gls{MSFR} concept. A previous study \cite{lindsay_introduction_2018}
+showcasing Moltres' capabilities with
 the \gls{MSRE} design had shown good agreement with legacy
 \gls{MSRE} data and strong parallel performance with up to 768 processors.
 We leverage on this powerful feature to provide high fidelity \gls{MSFR}
