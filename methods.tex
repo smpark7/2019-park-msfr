@@ -229,7 +229,15 @@ We also included a decay heat model based on a previous work
 decay heat precursor groups could model decay heat in the \gls{MSFR} for up to
 300 seconds after a full shutdown with less than 2 \% relative error
 \cite{aufiero_development_2014}. The decay heat parameters are shown in Table
-\ref{table:decay}.
+\ref{table:decay}, and the equation describing the behavior of decay heat
+precursors is given as:
+%
+\begin{align}
+	\frac{\partial D_i}{\partial t} = - \nabla(\overrightarrow{u} D_i)
+	+ \nabla \cdot \frac{\mu_T}{\rho Sc_T} \nabla D_i	
+	- \lambda_i D_i + \sum^G_{g'=1} f_i \nu \Sigma^f_{g'}
+	\phi_{g'}. \label{eq2}
+\end{align}
 
 \begin{table}[htb!]
 	\centering
@@ -250,22 +258,20 @@ decay heat precursor groups could model decay heat in the \gls{MSFR} for up to
 
 \subsubsection{Thermal-hydraulics}
 
+The thermal-hydraulics is modeled based on the incompressible Navier-Stokes
+equations with the Boussinesq hypothesis for eddy viscosity. Most of the
+Navier-Stokes module in Moltres is derived from the MOOSE Navier-Stokes module
+\cite{peterson_overview_2017}. In addition to the intrinsic material dynamic
+viscosity, we introduced an eddy viscosity term to approximate turbulent flow
+effects. The current implementation of Moltres does not have a turbulence
+model such as the \gls{RANS} equations used in the Polimi/TUDelft models.
+Thus, we made a zeroth-order approximation of the eddy viscosity based on the
+results reported in the Polimi/TUDelft models.
 
-
-\begin{figure}[htb!]
-        \centering
-\begin{tikzpicture}[node distance=1.5cm]
-\node (start) [object] {Start};
-\node (step1) [process, below of=start] {Step 1};
-\node (intermediate) [object, below of=step1] {Intermediate};
-\node (step2) [process, below of=intermediate] {Step 2};
-\node (end) [object, below of=step2]{End};
-
-\draw [arrow] (start) -- (step1); 
-\draw [arrow] (step1) -- (intermediate);
-\draw [arrow] (intermediate) -- (step2); 
-\draw [arrow] (step2) -- (end);
-\end{tikzpicture}
-\caption{A caption for the flowchart.}
-\label{fig:comp}
-\end{figure}
+The flow rate is dictated by the inflow boundary condition at the core inlet
+to meet the 4.5 m$^3$ s$^{-1}$ specification. We imposed no-slip boundary
+conditions on the walls of the core, and homogeneous Neumann boundary
+conditions on the core outlet. The energy balance equation for temperature is
+given in Eq. *. The diffusion term includes turbulent heat diffusivity based
+on the eddy viscosity and the turbulent Prandtl number, which we assume to be
+0.85.
