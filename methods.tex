@@ -48,15 +48,16 @@ results is negligible.
 
 The second difference pertains to the modeling of the external loop. In its
 current implementation, Moltres lacks pump- and heat exchanger-equivalents in
-the code. Thus, the external loop is modeled as a 1-D pipe with a point heat
-sink to represent the heat exchanger. Instead of pumps, the flow is driven by
-Dirichlet boundary conditions for velocity on the inlet and outlet boundaries
-of the 2-D axisymmetric central core geometry and the 1-D external pipe
-geometry. All flow-dependent variables such as temperature, \glspl{DNP}, and
-decay heat precursors are fully conserved as they loop around between the two
-regions. As a result, this approach shares some similarities with the
+the code. Thus, the external loop, beyond the central region of the primary
+loop where most of the fissions take place, is modeled as a 1-D pipe with a
+point heat sink to represent the heat exchanger. Instead of pumps, the flow is
+driven by Dirichlet boundary conditions for velocity on the inlet and outlet
+boundaries of the central regions of the primary loop, and the 1-D external
+pipe geometry. All flow-dependent variables such as temperature, \glspl{DNP},
+and decay heat precursors are fully conserved as they loop around between the
+two regions. As a result, this approach shares some similarities with the
 geometric multiscale modeling approach by Zanetti et al.
-\cite{zanetti_geometric_2015} Future models could
+\cite{zanetti_geometric_2015}. Future models could
 create a better representation of the primary loop by implementing a whole
 continuous loop with pressure increases and drops corresponding to the pumps
 and heat exchangers. 
@@ -85,7 +86,7 @@ cross-sections, neutron diffusion coefficient, average fission energy, average
 neutron yield, inverse neutron speed, fission spectrum, \gls{DNP} group
 constants, and effective delayed neutron fractions.
 
-Moltres, by extension from MOOSE, accepts various mesh file formats; we refer
+By extension from MOOSE, Moltres accepts various mesh file formats; we refer
 readers to the MOOSE framework website for the full list of supported file
 formats. We used the Trelis 16.5 \cite{noauthor_trelis_2018} to generate the
 \gls{MSFR} mesh (Fig. \ref{fig:msfrgeom}) in this work. There are finer mesh
@@ -117,12 +118,12 @@ drop in neutron flux at those boundaries.
 		\hline
 		{Group number} & {Upper bound [MeV]}\\
 		\hline
-		1 & 7.485$\times 10^{-4}$\\
-		2 & 5.5308$\times 10^{-3}$\\
-		3 & 2.47875$\times 10^{-2}$\\
-		4 & 0.4979\\
-		5 & 2.2313\\
-		6 & 12\\
+		1 & 20\\
+		2 & 2.2313\\
+		3 & 0.4979\\
+		4 & 2.47875$\times 10^{-2}$\\
+		5 & 5.5308$\times 10^{-3}$\\
+		6 & 7.485$\times 10^{-4}$\\
 		\hline
 	\end{tabular}
 	\label{table:bound}
@@ -146,6 +147,8 @@ flux and velocity variables were approximated by first-order
 Lagrangian finite element shape functions, while the \gls{DNP} and decay heat
 precusor variables were approximated by constant monomial shape functions.
 
+
+
 \subsubsection{Neutronics}
 
 The neutronics is implemented through the deterministic multi-group neutron
@@ -164,7 +167,7 @@ Moltres is:
 	\nabla \phi_g + \Sigma^r_g \phi_g \nonumber \\ 
 	&= \sum^G_{g \neq g'} \Sigma^s_{g' \rightarrow g} \phi_{g'} + \chi^p_g
 	\sum^G_{g'=1} (1-\beta) \nu \Sigma^f_{g'} \phi_{g'} + \chi^d_g \sum^I_i
-	\lambda_i C_i. \label{eq1}
+	\lambda_i C_i. \label{eq:neut}
 \end{align}
 %	\intertext{where}
 %	v_g &= \text{average speed of neutrons in group }g \nonumber \\
@@ -204,17 +207,17 @@ geometry and homogeneous Neumann boundary conditions along the axial boundary.
 The \glspl{DNP} are governed by the following equation:
 %
 \begin{align}
-	\frac{\partial C_i}{\partial t} = - \nabla(\overrightarrow{u} C_i)
-	+ \nabla \cdot \frac{\mu_T}{\rho Sc_T} \nabla C_i	
-	- \lambda_i C_i + \sum^G_{g'=1} \beta_i \nu \Sigma^f_{g'}
-	\phi_{g'}. \label{eq2}
+	\frac{\partial C_i}{\partial t} = - \boldsymbol{u} \cdot \nabla(C_i)
+	+ \nabla \cdot \frac{\mu_t}{\rho Sc_t} \nabla C_i	
+	- \lambda_i C_i + \beta_i \sum^G_{g'=1} \nu \Sigma^f_{g'}
+	\phi_{g'}. \label{eq:dnp}
 \end{align}
 
 There are eight \gls{DNP} groups with decay constants pre-defined by the
 JEFF-3.1.2 library \cite{oecd/nea_jeff-3.1.2_2014}. Similar to the
-Polimi/TUDelft models, the \gls{DNP} equation (Eq. \ref{eq2}) contains both
+Polimi/TUDelft models, the \gls{DNP} equation (Eq. \ref{eq:dnp}) contains both
 convective and diffusive terms. The diffusive term arises from turbulent
-diffusion approximated by the turbulent viscosity, and the turbulent Schmidt
+diffusion approximated by the eddy viscosity, and the turbulent Schmidt
 number assumed to be 0.85. The turbulent viscosity is discussed in greater
 detail in the thermal-hydraulics subsection. The \glspl{DNP} are simulated
 only in the central core region and the 1-D pipe representing the external
@@ -233,10 +236,10 @@ decay heat precursor groups could model decay heat in the \gls{MSFR} for up to
 precursors is given as:
 %
 \begin{align}
-	\frac{\partial D_i}{\partial t} = - \nabla(\overrightarrow{u} D_i)
-	+ \nabla \cdot \frac{\mu_T}{\rho Sc_T} \nabla D_i	
-	- \lambda_i D_i + \sum^G_{g'=1} f_i \nu \Sigma^f_{g'}
-	\phi_{g'}. \label{eq2}
+	\frac{\partial D_i}{\partial t} = - \boldsymbol{u} \cdot \nabla(D_i)
+	+ \nabla \cdot \frac{\mu_t}{\rho Sc_t} \nabla D_i	
+	- \lambda_i D_i + f_i \sum^G_{g'=1} \nu \Sigma^f_{g'}
+	\phi_{g'}. \label{eq:decayheat}
 \end{align}
 
 \begin{table}[htb!]
@@ -258,20 +261,49 @@ precursors is given as:
 
 \subsubsection{Thermal-hydraulics}
 
-The thermal-hydraulics is modeled based on the incompressible Navier-Stokes
+The fluid dynamics is modeled using the incompressible Navier-Stokes
 equations with the Boussinesq hypothesis for eddy viscosity. Most of the
 Navier-Stokes module in Moltres is derived from the MOOSE Navier-Stokes module
-\cite{peterson_overview_2017}. In addition to the intrinsic material dynamic
+\cite{peterson_overview_2017}. In addition to the intrinsic molecular
 viscosity, we introduced an eddy viscosity term to approximate turbulent flow
 effects. The current implementation of Moltres does not have a turbulence
 model such as the \gls{RANS} equations used in the Polimi/TUDelft models.
 Thus, we made a zeroth-order approximation of the eddy viscosity based on the
-results reported in the Polimi/TUDelft models.
+results reported in the Polimi/TUDelft models. The eddy viscosity is assumed
+to be 40 kg m$^{-1}$ s$^{-1}$. Despite the simplicity of this assumption, we
+were able to reproduce much of the flow profile observed in the Polimi/TUDelft
+models at steady state.
 
-The flow rate is dictated by the inflow boundary condition at the core inlet
-to meet the 4.5 m$^3$ s$^{-1}$ specification. We imposed no-slip boundary
+The flow rate is dictated by an inflow boundary condition at the core inlet
+for a volumetric flow rate of 4.5 m$^3$ s$^{-1}$. We imposed no-slip boundary
 conditions on the walls of the core, and homogeneous Neumann boundary
 conditions on the core outlet. The energy balance equation for temperature is
-given in Eq. *. The diffusion term includes turbulent heat diffusivity based
-on the eddy viscosity and the turbulent Prandtl number, which we assume to be
-0.85.
+given in Eq. \ref{eq:temp}. The diffusion term includes turbulent heat
+diffusivity based on the eddy viscosity $\mu_T$ and the turbulent Prandtl
+number $Pr_t$, which we assume to be equal to 0.85. 
+%
+\begin{align}
+	\rho c_p \frac{dT}{dt} &= - \rho c_p u \cdot \nabla T + \nabla \cdot ((k +
+	k_t) \nabla T) + (1 - \sum_k f_k \lambda_k) Q_f + \sum_k \lambda_k D_k
+	\label{eq:temp} \\
+	\intertext{where}
+	k_t &= \frac{\mu_t}{\rho Pr_t}
+\end{align}
+
+\subsubsection{External Loop}
+
+The geometry for the external loop region is a 2.255 m 1-D pipe. Temperature,
+\glspl{DNP}, and decay heat precursors are advected at a fixed velocity of
+1.1275 m s$^{-1}$ to simulate the two seconds spent outside the central core
+region. Both types of precursors continue to decay. While the delayed neutrons
+from the \glspl{DNP} are assumed to be ``lost'' in this region of low
+neutronic importance, the decay heat precursors continue contributing decay
+heat to the fuel salt temperature. The inflow boundary conditions for
+temperature and precursors concentrations are coupled to the outlet values of
+the central core region, and vice versa for the outlet values of this
+external loop region with the inflow boundary conditions for the central core
+region.
+
+There is a point heat sink defined at the center of this region by the means
+of a negative power value to induce a nominal 100 K drop in temperature. This
+power value is tied to 
